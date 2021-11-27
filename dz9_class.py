@@ -2,17 +2,15 @@ from datetime import datetime
 
 class DataInfo:
 
-    def __init__(self, domains_text, names_text, authors_text):
-        self.domain_text = domains_text
-        self.names_text = names_text
-        self.authors_text = authors_text
-        # self.read_file()
+    def __init__(self, filename):
+        self.filename = filename
+        self.read_file()
         self.result = self.date_data()
 
-    # def read_file(self):
-    #     with open(self.filename, "r") as file:
-    #         data = file.readlines()
-    #     return data
+    def read_file(self):
+        with open(self.filename, "r") as file:
+            data = file.read().split("\n")
+        return data
 
     def result(self):
         return self.result
@@ -21,20 +19,17 @@ class DataInfo:
         return f"{self.result}"
 
     def domain_data(self):
-        with open(self.domain_text, 'r', encoding="utf-8") as domain_file:
-            data_domains = [domains.replace(".", "")[:-1] for domains in domain_file.readlines()]
-            return data_domains
+        data_domains = [domains.replace(".", "") for domains in self.read_file()]
+        return data_domains
 
 
     def name_data(self):
-        with open(self.names_text, 'r', encoding="utf-8") as names_file:
-            surnames = [surname.split("\t")[1] for surname in names_file.readlines()]
-            return surnames
+        surnames = [surname.split("\t")[1] for surname in self.read_file()]
+        return surnames
 
 
     def date_data(self):
-        date_file = open(self.authors_text, "r").read()
-        dates = date_file.split("\n")
+        dates = self.read_file()
         num = 0
         while (num < len(dates)):
             if (" - " in dates[num]):
@@ -45,5 +40,3 @@ class DataInfo:
             else:
                 dates.pop(num)
         return [{"date_original": date, "date_modified": datetime.strptime(date, "%d %B %Y").strftime("%d/%m/%Y")} for date in dates]
-
-
